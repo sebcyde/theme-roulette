@@ -3,51 +3,51 @@ import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Activating Roulette.');
-
+	let id_array: NodeJS.Timer[] = [];
 	const AllThemes: any[] = [];
+	let id: NodeJS.Timer;
+
 	const RandomTheme = () => {
 		return AllThemes[Math.floor(Math.random() * AllThemes.length)];
 	};
 
-	let id: NodeJS.Timer;
-	// decaring an array to store id values
-	let id_array: NodeJS.Timer[] = [];
+	const RetrieveThemes = () => {
+		const extensions = vscode.extensions.all;
+		for (const extension of extensions) {
+			const packageJSON = extension.packageJSON;
 
-	let disposable = vscode.commands.registerCommand(
-		'theme-roulette.spin',
-		() => {
-			const Execute = () => {
-				// Extension Startup
-				vscode.window.showInformationMessage('Spinning Roulette.');
+			if (packageJSON.contributes && packageJSON.contributes.themes) {
+				const themes = packageJSON.contributes.themes;
 
-				const extensions = vscode.extensions.all;
-				for (const extension of extensions) {
-					const packageJSON = extension.packageJSON;
-
-					if (packageJSON.contributes && packageJSON.contributes.themes) {
-						const themes = packageJSON.contributes.themes;
-
-						for (const theme of themes) {
-							if (
-								theme.uiTheme === 'vs-dark' &&
-								theme.label.includes('Doki ')
-							) {
-								AllThemes.push(theme);
-							}
-						}
+				for (const theme of themes) {
+					if (theme.uiTheme === 'vs-dark' && theme.label.includes('Doki ')) {
+						AllThemes.push(theme);
 					}
 				}
+			}
+		}
+	};
 
-				let Chosen = RandomTheme();
+	const SetTheme = () => {
+		let Chosen = RandomTheme();
 
-				vscode.workspace
-					.getConfiguration('workbench')
-					.update('colorTheme', Chosen.id, vscode.ConfigurationTarget.Global)
-					.then(() => {
-						console.log(
-							`Successfully set ${Chosen.label} as the active color theme`
-						);
-					});
+		vscode.workspace
+			.getConfiguration('workbench')
+			.update('colorTheme', Chosen.id, vscode.ConfigurationTarget.Global)
+			.then(() => {
+				console.log(
+					`Successfully set ${Chosen.label} as the active color theme`
+				);
+			});
+	};
+
+	let disposable = vscode.commands.registerCommand(
+		'theme-roulette.timer',
+		() => {
+			const Execute = () => {
+				vscode.window.showInformationMessage('Starting Timed Roulette.');
+				RetrieveThemes();
+				SetTheme();
 			};
 
 			Execute();
@@ -61,9 +61,18 @@ export function activate(context: vscode.ExtensionContext) {
 		for (var i = 0; i < id_array.length; i++) {
 			clearInterval(id_array[i]);
 		}
+		id_array = [];
+	});
+
+	let Spin = vscode.commands.registerCommand('theme-roulette.spin', () => {
+		vscode.window.showInformationMessage('Spinning Roulette.');
+		RetrieveThemes();
+		SetTheme();
 	});
 
 	context.subscriptions.push(disposable);
+	context.subscriptions.push(Stop);
+	context.subscriptions.push(Spin);
 }
 
 // This method is called when your extension is deactivated
