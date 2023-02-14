@@ -1,11 +1,14 @@
 {
-	"publisher:": "JTSC25",
+	"publisher": "JTSC25",
 	"name": "theme-roulette",
 	"displayName": "Theme Roulette",
 	"description": "A random theme selector built on the Doki Theme extension",
-	"version": "1.0.0",
+	"version": "1.3.0",
+	"icons": {
+		"Icon": "icon-256.png"
+	},
 	"engines": {
-		"vscode": "^1.75.0"
+		"vscode": "^1.74.0"
 	},
 	"repository": {
 		"type": "git",
@@ -26,13 +29,24 @@
 			},
 			{
 				"command": "theme-roulette.stop",
-				"title": "Stop Roulette"
+				"title": "Stop Timed Roulette"
 			},
 			{
 				"command": "theme-roulette.spin",
 				"title": "Spin Roulette"
 			}
-		]
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Theme Roulette",
+			"properties": {
+				"theme-roulette.spinduration": {
+					"type": "number",
+					"description": "Spin Timer (Minutes)",
+					"default": 15
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -46,7 +60,7 @@
 		"@types/glob": "^8.0.1",
 		"@types/mocha": "^10.0.1",
 		"@types/node": "16.x",
-		"@types/vscode": "^1.75.0",
+		"@types/vscode": "^1.74.0",
 		"@typescript-eslint/eslint-plugin": "^5.49.0",
 		"@typescript-eslint/parser": "^5.49.0",
 		"@vscode/test-electron": "^2.2.2",

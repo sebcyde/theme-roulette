@@ -2,7 +2,9 @@
 
 ## Features
 
-Theme Roulette is built for devs that frequently change their VS Code themes. Using the 'Spin Roulette' command, the extension will automatically change your theme every 30 minutes until the 'Stop Roulette' command is run.
+Theme Roulette is built for devs that frequently change their VS Code themes. Using the 'Spin Roulette' command, the extension will automatically change your theme on a timer until the 'Stop Roulette' command is run.
+
+The amount of minutes between cycles can be set in the extension settings. The default is 15 minutes.
 
 ## Dependencies
 

@@ -2,7 +2,12 @@
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
+	const SpinDuration = vscode.workspace
+		.getConfiguration('theme-roulette')
+		.get<number>('spinduration');
+
 	console.log('Activating Roulette.');
+	console.log('Spin Duration:', SpinDuration);
 	let id_array: NodeJS.Timer[] = [];
 	const AllThemes: any[] = [];
 	let id: NodeJS.Timer;
@@ -35,9 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
 			.getConfiguration('workbench')
 			.update('colorTheme', Chosen.id, vscode.ConfigurationTarget.Global)
 			.then(() => {
-				console.log(
-					`Successfully set ${Chosen.label} as the active color theme`
-				);
+				vscode.window.showInformationMessage(`Current Theme: ${Chosen.label}`);
 			});
 	};
 
@@ -51,7 +54,7 @@ export function activate(context: vscode.ExtensionContext) {
 			};
 
 			Execute();
-			id = setInterval(Execute, 1800000);
+			id = setInterval(Execute, SpinDuration ? SpinDuration * 60000 : 150000);
 			id_array.push(id);
 		}
 	);
@@ -78,4 +81,5 @@ export function activate(context: vscode.ExtensionContext) {
 // This method is called when your extension is deactivated
 export function deactivate() {
 	vscode.window.showInformationMessage('Deactivating Roulette.');
+	console.log('Deactivating Roulette.');
 }
