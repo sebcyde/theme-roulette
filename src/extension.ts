@@ -6,11 +6,20 @@ export function activate(context: vscode.ExtensionContext) {
 		.getConfiguration('theme-roulette')
 		.get<number>('spinduration');
 
-	console.log('Activating Roulette.');
-	console.log('Spin Duration:', SpinDuration);
 	let id_array: NodeJS.Timer[] = [];
 	const AllThemes: any[] = [];
 	let id: NodeJS.Timer;
+
+	const statusBarItem = vscode.window.createStatusBarItem(
+		vscode.StatusBarAlignment.Right,
+		Number.MIN_SAFE_INTEGER // furthest right on the right
+	);
+	statusBarItem.command = 'extension.showThemeStatus';
+	statusBarItem.tooltip = 'Current VS Code theme';
+
+	const updateStatusBarItem = (ThemeLabel: string) => {
+		statusBarItem.text = `$(paintcan) ${ThemeLabel}`;
+	};
 
 	const RandomTheme = () => {
 		return AllThemes[Math.floor(Math.random() * AllThemes.length)];
@@ -33,6 +42,20 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	};
 
+	const themeWatcher = vscode.workspace.onDidChangeConfiguration((event) => {
+		if (event.affectsConfiguration('workbench.colorTheme')) {
+			let IncludedTheme = false;
+			const theme: any = vscode.workspace
+				.getConfiguration()
+				.get('workbench.colorTheme');
+			AllThemes.forEach((dokitheme) => {
+				if (dokitheme.id.toLowerCase() == theme.toLowerCase())
+					IncludedTheme = true;
+			});
+			if (!IncludedTheme) statusBarItem.hide();
+		}
+	});
+
 	const SetTheme = () => {
 		let Chosen = RandomTheme();
 
@@ -41,6 +64,8 @@ export function activate(context: vscode.ExtensionContext) {
 			.update('colorTheme', Chosen.id, vscode.ConfigurationTarget.Global)
 			.then(() => {
 				vscode.window.showInformationMessage(`Current Theme: ${Chosen.label}`);
+				updateStatusBarItem(Chosen.label);
+				statusBarItem.show();
 			});
 	};
 
@@ -48,7 +73,6 @@ export function activate(context: vscode.ExtensionContext) {
 		'theme-roulette.timer',
 		() => {
 			const Execute = () => {
-				vscode.window.showInformationMessage('Starting Timed Roulette.');
 				RetrieveThemes();
 				SetTheme();
 			};
@@ -61,6 +85,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let Stop = vscode.commands.registerCommand('theme-roulette.stop', () => {
 		deactivate();
+		statusBarItem.hide();
+
 		for (var i = 0; i < id_array.length; i++) {
 			clearInterval(id_array[i]);
 		}
@@ -68,11 +94,12 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	let Spin = vscode.commands.registerCommand('theme-roulette.spin', () => {
-		vscode.window.showInformationMessage('Spinning Roulette.');
 		RetrieveThemes();
 		SetTheme();
 	});
 
+	context.subscriptions.push(statusBarItem);
+	context.subscriptions.push(themeWatcher);
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(Stop);
 	context.subscriptions.push(Spin);

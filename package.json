@@ -2,8 +2,8 @@
 	"publisher": "JTSC25",
 	"name": "theme-roulette",
 	"displayName": "Theme Roulette",
-	"description": "A random theme selector built on the Doki Theme extension",
-	"version": "1.3.0",
+	"description": "A theme randomiser built on the Doki Theme extension",
+	"version": "1.4.0",
 	"icons": {
 		"Icon": "icon-256.png"
 	},
@@ -34,8 +34,20 @@
 			{
 				"command": "theme-roulette.spin",
 				"title": "Spin Roulette"
+			},
+			{
+				"command": "theme-roulette.showThemeStatus",
+				"title": "Show Current Theme"
 			}
 		],
+		"statusbar": {
+			"id": "themeStatus",
+			"alignment": "right",
+			"name": "$(paintcan) Theme Status",
+			"tooltip": "Current VS Code theme",
+			"text": "$(sync~spin) Loading...",
+			"command": "theme-roulette.showThemeStatus"
+		},
 		"configuration": {
 			"type": "object",
 			"title": "Theme Roulette",
