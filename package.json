@@ -56,6 +56,11 @@
 					"type": "number",
 					"description": "Spin Timer (Minutes)",
 					"default": 15
+				},
+				"theme-roulette.shufflesticker": {
+					"type": "boolean",
+					"description": "Shuffle sticker with theme",
+					"default": false
 				}
 			}
 		}

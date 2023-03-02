@@ -6,6 +6,10 @@ export function activate(context: vscode.ExtensionContext) {
 		.getConfiguration('theme-roulette')
 		.get<number>('spinduration');
 
+	const ShuffleSticker = vscode.workspace
+		.getConfiguration('theme-roulette')
+		.get<boolean>('shufflesticker');
+
 	let id_array: NodeJS.Timer[] = [];
 	const AllThemes: any[] = [];
 	let id: NodeJS.Timer;
@@ -58,6 +62,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const SetTheme = () => {
 		let Chosen = RandomTheme();
+
+		console.log('Chosen:', Chosen)
 
 		vscode.workspace
 			.getConfiguration('workbench')
